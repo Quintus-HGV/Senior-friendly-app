@@ -1,6 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MessageSquare, Camera, Calendar, Heart, Pill, Users, Settings, Home, Clock, Volume2, Search, Mic, Bell, Sun, Moon, Battery, Wifi } from 'lucide-react';
 
+// Add interfaces for data types
+interface Contact {
+  id: number;
+  name: string;
+  phone: string;
+  relationship: string;
+  lastCall: string;
+}
+
+interface Appointment {
+  id: number;
+  title: string;
+  time: string;
+  date: string;
+  type: 'medical' | 'social' | 'errand';
+}
+
+interface Medication {
+  id: number;
+  name: string;
+  time: string;
+  taken: boolean;
+}
+
+interface MainButtonProps {
+  icon: React.ElementType;
+  label: string;
+  onClick: string | (() => void);
+  color?: string;
+  size?: 'large' | 'small';
+}
+
 export default function SeniorFriendlyApp() {
   const [currentScreen, setCurrentScreen] = useState('home');
   const [fontSize, setFontSize] = useState('text-2xl');
@@ -11,20 +43,20 @@ export default function SeniorFriendlyApp() {
   const [weather, setWeather] = useState({ temp: 72, condition: 'sunny' });
   const [greeting, setGreeting] = useState('');
   const [medications, setMedications] = useState([
-    { name: 'Blood Pressure Pill', time: '8:00 AM', taken: false, reminder: true },
-    { name: 'Vitamin D', time: '12:00 PM', taken: false, reminder: false },
-    { name: 'Heart Medication', time: '6:00 PM', taken: false, reminder: false }
+    { id: 1, name: 'Blood Pressure Pill', time: '8:00 AM', taken: false },
+    { id: 2, name: 'Vitamin D', time: '12:00 PM', taken: false },
+    { id: 3, name: 'Heart Medication', time: '6:00 PM', taken: false }
   ]);
   const [calls, setCalls] = useState([
-    { name: 'John (Son)', time: 'Today 2:30 PM', missed: false, duration: '15 min' },
-    { name: 'Dr. Smith', time: 'Yesterday', missed: true, duration: 'Missed' },
-    { name: 'Mary (Daughter)', time: 'June 13', missed: false, duration: '22 min' },
-    { name: 'Pharmacy', time: 'June 12', missed: false, duration: '5 min' }
+    { id: 1, name: 'John (Son)', time: 'Today 2:30 PM', missed: false, duration: '15 min' },
+    { id: 2, name: 'Dr. Smith', time: 'Yesterday', missed: true, duration: 'Missed' },
+    { id: 3, name: 'Mary (Daughter)', time: 'June 13', missed: false, duration: '22 min' },
+    { id: 4, name: 'Pharmacy', time: 'June 12', missed: false, duration: '5 min' }
   ]);
   const [messages, setMessages] = useState([
-    { from: 'John', text: 'How are you feeling today?', time: '2:30 PM', unread: true },
-    { from: 'Dr. Smith', text: 'Appointment reminder for tomorrow', time: '1:15 PM', unread: true },
-    { from: 'Mary', text: 'Call me when you can', time: '11:00 AM', unread: false }
+    { id: 1, from: 'John', text: 'How are you feeling today?', time: '2:30 PM', unread: true },
+    { id: 2, from: 'Dr. Smith', text: 'Appointment reminder for tomorrow', time: '1:15 PM', unread: true },
+    { id: 3, from: 'Mary', text: 'Call me when you can', time: '11:00 AM', unread: false }
   ]);
   const [photos, setPhotos] = useState(12);
   const [healthData, setHealthData] = useState({
@@ -35,9 +67,9 @@ export default function SeniorFriendlyApp() {
   });
 
   const [emergencyContacts] = useState([
-    { name: 'Emergency', number: '911', color: 'bg-red-600' },
-    { name: 'Doctor', number: '555-0123', color: 'bg-blue-600' },
-    { name: 'Family', number: '555-0456', color: 'bg-green-600' }
+    { id: 1, name: 'Emergency', number: '911', color: 'bg-red-600' },
+    { id: 2, name: 'Doctor', number: '555-0123', color: 'bg-blue-600' },
+    { id: 3, name: 'Family', number: '555-0456', color: 'bg-green-600' }
   ]);
 
   // Update time every second
@@ -215,8 +247,8 @@ export default function SeniorFriendlyApp() {
           text="Medications"
           onClick={() => setCurrentScreen('medications')}
           color="bg-red-500 hover:bg-red-600"
-          badge={medications.filter(m => m.reminder && !m.taken).length}
-          pulse={medications.some(m => m.reminder && !m.taken)}
+          badge={medications.filter(m => m.taken).length}
+          pulse={medications.some(m => m.taken)}
         />
         <InteractiveButton
           icon={<Calendar size={fontSize === 'text-xl' ? 32 : fontSize === 'text-2xl' ? 40 : 48} />}
@@ -369,14 +401,12 @@ export default function SeniorFriendlyApp() {
             className={`p-4 rounded-lg border-2 transition-all duration-300 ${
               med.taken 
                 ? 'bg-green-100 border-green-300 shadow-md' 
-                : med.reminder 
-                  ? 'bg-yellow-100 border-yellow-400 animate-pulse shadow-lg' 
-                  : 'bg-gray-100 border-gray-300'
+                : 'bg-gray-100 border-gray-300'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className={`w-4 h-4 rounded-full ${med.taken ? 'bg-green-500' : med.reminder ? 'bg-yellow-500 animate-ping' : 'bg-gray-400'}`}></div>
+                <div className={`w-4 h-4 rounded-full ${med.taken ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                 <div>
                   <p className={`${fontSize} font-bold text-gray-800`}>{med.name}</p>
                   <p className={`${fontSize === 'text-xl' ? 'text-lg' : fontSize === 'text-2xl' ? 'text-xl' : 'text-2xl'} text-gray-600`}>
@@ -395,13 +425,6 @@ export default function SeniorFriendlyApp() {
                 {med.taken ? '✓ Taken' : 'Take Now'}
               </button>
             </div>
-            {med.reminder && !med.taken && (
-              <div className="mt-3 p-2 bg-yellow-200 rounded-lg">
-                <p className={`${fontSize === 'text-xl' ? 'text-base' : fontSize === 'text-2xl' ? 'text-lg' : 'text-xl'} text-yellow-800 font-semibold`}>
-                  ⏰ Reminder: Time to take your medication!
-                </p>
-              </div>
-            )}
           </div>
         ))}
       </div>
@@ -561,9 +584,9 @@ export default function SeniorFriendlyApp() {
             <h2 className={`${fontSize === 'text-xl' ? 'text-3xl' : fontSize === 'text-2xl' ? 'text-4xl' : 'text-5xl'} font-bold text-blue-900 mb-6`}>Upcoming Appointments</h2>
             <div className="space-y-4">
               {[
-                { title: 'Dr. Johnson - Annual Checkup', date: 'June 18, 10:00 AM', type: 'medical' },
-                { title: 'Eye Doctor - Vision Test', date: 'June 22, 2:00 PM', type: 'specialist' },
-                { title: 'Dentist - Cleaning', date: 'June 25, 9:00 AM', type: 'dental' }
+                { id: 1, title: 'Dr. Johnson - Annual Checkup', date: 'June 18, 10:00 AM', type: 'medical' },
+                { id: 2, title: 'Eye Doctor - Vision Test', date: 'June 22, 2:00 PM', type: 'specialist' },
+                { id: 3, title: 'Dentist - Cleaning', date: 'June 25, 9:00 AM', type: 'dental' }
               ].map((apt, index) => (
                 <div key={index} className="p-4 bg-purple-100 border-2 border-purple-300 rounded-lg hover:shadow-lg transition-all duration-300">
                   <div className="flex items-center justify-between">
