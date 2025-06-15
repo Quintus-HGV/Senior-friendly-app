@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, MessageSquare, Camera, Calendar, Heart, Pill, Users, Settings, Home, Clock, Volume2, Search, Mic, Bell, Sun, Moon, Battery, Wifi } from 'lucide-react';
+import { Phone, MessageSquare, Camera, Calendar, Heart, Pill, Settings, Home, Clock, Volume2, Mic, Bell, Sun, Moon, Battery, Wifi } from 'lucide-react';
 
 export default function SeniorFriendlyApp() {
   const [currentScreen, setCurrentScreen] = useState('home');
@@ -8,7 +8,7 @@ export default function SeniorFriendlyApp() {
   const [notifications, setNotifications] = useState(3);
   const [batteryLevel, setBatteryLevel] = useState(85);
   const [isListening, setIsListening] = useState(false);
-  const [weather, setWeather] = useState({ temp: 72, condition: 'sunny' });
+  const [weather] = useState({ temp: 72, condition: 'sunny' });
   const [greeting, setGreeting] = useState('');
   const [medications, setMedications] = useState([
     { name: 'Blood Pressure Pill', time: '8:00 AM', taken: false, reminder: true },
@@ -27,7 +27,7 @@ export default function SeniorFriendlyApp() {
     { from: 'Mary', text: 'Call me when you can', time: '11:00 AM', unread: false }
   ]);
   const [photos, setPhotos] = useState(12);
-  const [healthData, setHealthData] = useState({
+  const [healthData] = useState({
     bloodPressure: '120/80',
     weight: 165,
     steps: 3500,
